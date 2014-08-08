@@ -12,8 +12,8 @@ import com.slaterama.qslib.utils.LogEx;
 
 /**
  * <p>A class that manages architecture patterns (i.e. MVC, MVP, MVVM etc.)
- * for user in decoupling the view from the model.</p>
- * <p>This class mplements the "Initialization-on-demand holder idiom" as described here:
+ * for use in decoupling the view from the model.</p>
+ * <p>This class implements the "Initialization-on-demand holder idiom" as described here:
  * http://en.wikipedia.org/wiki/Initialization-on-demand_holder_idiom</p>
  */
 public abstract class ArchitectureManager {
