@@ -2,22 +2,41 @@ package com.slaterama.qslib.alpha.app.architecture;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class ArchitectureManagerHoneycomb extends ArchitectureManager {
+@TargetApi(Build.VERSION_CODES.DONUT)
+public class SupportArchitectureManager extends AbsArchitectureManager {
 
-	public ArchitectureManagerHoneycomb() {}
+	/**
+	 * Gets the singleton instance of Engine.
+	 * @return The singleton instance.
+	 */
+	public static SupportArchitectureManager getInstance() {
+		return LazyHolder.INSTANCE;
+	}
+
+	/**
+	 * A lazily-instantiated instance holder.
+	 */
+	private static class LazyHolder {
+		private static final SupportArchitectureManager INSTANCE = new SupportArchitectureManager();
+	}
+
+	private SupportArchitectureManager() {}
 
 	@Override
 	public Architecture getArchitecture(Activity activity, int id, Bundle args, ArchitectureCallbacks callback) {
-		return getArchitecture(activity.getFragmentManager(), id, args, callback);
+		throw new UnsupportedOperationException("SupportArchitectureManager supports FragmentActivity only; use ArchitectureManager instead");
 	}
 
-	@Override
+	public Architecture getArchitecture(FragmentActivity activity, int id, Bundle args, ArchitectureCallbacks callback) {
+		return getArchitecture(activity.getSupportFragmentManager(), id, args, callback);
+	}
+
 	public Architecture getArchitecture(Fragment fragment, int id, Bundle args, ArchitectureCallbacks callback) {
 		return getArchitecture(fragment.getFragmentManager(), id, args, callback);
 	}
@@ -44,7 +63,7 @@ public class ArchitectureManagerHoneycomb extends ArchitectureManager {
 		@Override
 		public void onDestroy() {
 			super.onDestroy();
-			getInstance().destroyArchitectures(this);
+			ArchitectureManager.getInstance().destroyArchitectures(this);
 		}
 	}
 }

@@ -1,6 +1,6 @@
 package com.slaterama.qslib.alpha.app.architecture;
 
-public abstract class Architecture {
+public abstract interface Architecture {
 
 	public static enum Type {
 		MVC,
