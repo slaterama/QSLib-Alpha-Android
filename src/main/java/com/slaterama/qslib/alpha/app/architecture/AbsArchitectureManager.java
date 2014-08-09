@@ -104,7 +104,7 @@ public abstract class AbsArchitectureManager {
 		 * @param callback Interface the ArchitectureManager will call to create the architecture. Required.
 		 * @return The last created architecture if one exists, or a newly-created architecture otherwise.
 		 */
-		protected Architecture getArchitecture(Object object,
+		public Architecture getArchitecture(Object object,
 											   int id, Bundle args, ArchitectureCallbacks callback) {
 			if (mArchitectureMap == null)
 				mArchitectureMap = new WeakHashMap<Object, SparseArray<Architecture>>();

@@ -1,4 +1,4 @@
-package com.slaterama.qslib.alpha.app.architecture;
+package com.slaterama.qslib.alpha.support.v4.app.architecture;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -7,6 +7,10 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+
+import com.slaterama.qslib.alpha.app.architecture.AbsArchitectureManager;
+import com.slaterama.qslib.alpha.app.architecture.Architecture;
+import com.slaterama.qslib.alpha.app.architecture.ArchitectureManager;
 
 @TargetApi(Build.VERSION_CODES.DONUT)
 public class SupportArchitectureManager extends AbsArchitectureManager {
