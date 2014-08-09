@@ -2,6 +2,7 @@ package com.slaterama.qslib.alpha.app.architecture;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.util.SparseArray;
 
 import java.util.WeakHashMap;
