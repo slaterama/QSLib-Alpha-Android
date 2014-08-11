@@ -8,6 +8,6 @@ public class PatternManagerBase extends PatternManager {
 
 	PatternManagerBase(Context owner) {
 		super(owner);
-		LogEx.d(String.format("owner instanceof %s", ((Object) owner).getClass().getSimpleName()));
+		LogEx.d(String.format("owner instanceof %s", ((Object) owner).getClass().getName()));
 	}
 }
