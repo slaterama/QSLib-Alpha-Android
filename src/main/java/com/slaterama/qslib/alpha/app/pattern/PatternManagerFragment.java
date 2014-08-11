@@ -28,13 +28,26 @@ public class PatternManagerFragment extends PatternManager {
 
 	@Override
 	public Pattern initPattern(int id, Bundle args, PatternCallbacks callback) {
-		return PatternMap.getInstance().initPattern(
-				getPatternFragment(mFragmentManager), id, args, callback);
+		PatternFragment patternFragment = getPatternFragment(mFragmentManager);
+		return PatternMap.getInstance().initPattern(patternFragment, id, args, callback);
 	}
 
 	@Override
 	public Pattern getPattern(int id) {
-		return PatternMap.getInstance().getPattern(getPatternFragment(mFragmentManager), id);
+		PatternFragment patternFragment = getPatternFragment(mFragmentManager);
+		return PatternMap.getInstance().getPattern(patternFragment, id);
+	}
+
+	@Override
+	public void destroyPattern(int id) {
+		PatternFragment patternFragment = getPatternFragment(mFragmentManager);
+		PatternMap.getInstance().destroyPattern(patternFragment, id);
+	}
+
+	@Override
+	public void destroyPatterns() {
+		PatternFragment patternFragment = getPatternFragment(mFragmentManager);
+		PatternMap.getInstance().remove(patternFragment);
 	}
 
 	private PatternFragment getPatternFragment(FragmentManager fragmentManager) {

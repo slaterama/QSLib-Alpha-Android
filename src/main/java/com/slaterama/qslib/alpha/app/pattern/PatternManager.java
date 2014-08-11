@@ -7,6 +7,8 @@ import java.util.WeakHashMap;
 
 public abstract class PatternManager {
 
+	public static int DEFAULT_PATTERN_ID = Integer.MIN_VALUE;
+
 	/**
 	 * The base tag to be used for assigning a tag to fragment(s) created by the PatternManager.
 	 */
@@ -26,8 +28,28 @@ public abstract class PatternManager {
 		return PatternMap.getInstance().initPattern(mOwner, id, args, callback);
 	}
 
+	public Pattern initPattern(Bundle args, PatternCallbacks callback) {
+		return initPattern(DEFAULT_PATTERN_ID, args, callback);
+	}
+
 	public Pattern getPattern(int id) {
 		return PatternMap.getInstance().getPattern(mOwner, id);
+	}
+
+	public Pattern getPattern() {
+		return getPattern(DEFAULT_PATTERN_ID);
+	}
+
+	public void destroyPattern(int id) {
+		PatternMap.getInstance().destroyPattern(mOwner, id);
+	}
+
+	public void destroyPattern() {
+		destroyPattern(DEFAULT_PATTERN_ID);
+	}
+
+	public void destroyPatterns() {
+		PatternMap.getInstance().remove(mOwner);
 	}
 
 	// TODO public void registerListener ??
