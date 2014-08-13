@@ -1,6 +1,7 @@
 package com.slaterama.qslib.alpha.app;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Build;
@@ -13,7 +14,19 @@ import com.slaterama.qslib.alpha.app.pattern.Pattern;
 public class PatternManager {
 	public static final String TAG = PatternManager.class.getName();
 
-	public static PatternManager get(FragmentManager fragmentManager) {
+	public static PatternManager from(Activity activity) {
+		if (activity == null)
+			throw new IllegalArgumentException("Activity can not be null");
+		return from(activity.getFragmentManager());
+	}
+
+	public static PatternManager from(Fragment fragment) {
+		if (fragment == null)
+			throw new IllegalArgumentException("Fragment can not be null");
+		return from(fragment.getFragmentManager());
+	}
+
+	private static PatternManager from(FragmentManager fragmentManager) {
 		if (fragmentManager == null)
 			throw new IllegalArgumentException("FragmentManager can not be null");
 		PatternFragment patternFragment = (PatternFragment) fragmentManager.findFragmentByTag(TAG);
