@@ -1,10 +1,21 @@
 package com.slaterama.qslib.alpha.app.pattern;
 
-public interface Pattern {
+import java.util.Map;
+import java.util.WeakHashMap;
 
-	public void registerPresenter(Presenter presenter);
+public abstract class Pattern {
 
-	public void unregisterPresenter(Presenter presenter);
+	protected Map<Presenter, Pattern> mPresenterMap;
 
-	public void sendEvent(PatternEvent event, Object data);
+	public Pattern() {
+		mPresenterMap = new WeakHashMap<Presenter, Pattern>();
+	}
+
+	public void registerPresenter(Presenter presenter) {
+		mPresenterMap.put(presenter, this);
+	}
+
+	public void unregisterPresenter(Presenter presenter) {
+		mPresenterMap.remove(presenter);
+	}
 }

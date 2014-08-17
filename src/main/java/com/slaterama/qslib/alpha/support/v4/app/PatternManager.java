@@ -11,7 +11,53 @@ import android.util.SparseArray;
 import com.slaterama.qslib.alpha.app.pattern.Pattern;
 
 @TargetApi(Build.VERSION_CODES.DONUT)
-public class PatternManager {
+public class PatternManager extends RetainedInstanceManager {
+
+	private static final Object KEY = new Object();
+
+	public static PatternManager newInstance(FragmentActivity activity) {
+		if (activity == null)
+			throw new IllegalArgumentException("Activity can not be null");
+		if (checkSource())
+			throw new IllegalStateException(ILLEGAL_STATE_MESSAGE);
+
+		return new PatternManager(activity.getSupportFragmentManager());
+	}
+
+	public static PatternManager newInstance(Fragment fragment) {
+		if (fragment == null)
+			throw new IllegalArgumentException("Fragment can not be null");
+		if (checkSource())
+			throw new IllegalStateException(ILLEGAL_STATE_MESSAGE);
+		return new PatternManager(fragment.getFragmentManager());
+	}
+
+	public static PatternManager newInstance(FragmentManager fragmentManager) {
+		if (fragmentManager == null)
+			throw new IllegalArgumentException("FragmentManager can not be null");
+		if (checkSource())
+			throw new IllegalStateException(ILLEGAL_STATE_MESSAGE);
+		return new PatternManager(fragmentManager);
+	}
+
+	protected PatternManager(FragmentManager fragmentManager) {
+		super(fragmentManager);
+	}
+
+	public Pattern initPattern(int id, Bundle args, PatternCallbacks callback) {
+		SparseArray<Pattern> patternArray = (SparseArray) getRetainedFragment().getObjectMap().get(KEY);
+		if (patternArray == null) {
+			patternArray = new SparseArray<Pattern>();
+			getRetainedFragment().getObjectMap().put(KEY, patternArray);
+		}
+		Pattern pattern = patternArray.get(id);
+		if (pattern == null) {
+			pattern = callback.onCreatePattern(id, args);
+			patternArray.put(id, pattern);
+		}
+		return pattern;	}
+
+	/*
 	public static final String TAG = PatternManager.class.getName();
 
 	public static PatternManager from(FragmentActivity activity) {
@@ -35,7 +81,7 @@ public class PatternManager {
 			fragmentManager.beginTransaction()
 					.add(patternFragment, TAG)
 					.commit();
-			fragmentManager.executePendingTransactions();
+//			fragmentManager.executePendingTransactions();
 		}
 		return patternFragment.getPatternManager();
 	}
@@ -71,6 +117,7 @@ public class PatternManager {
 			return mPatternManager;
 		}
 	}
+	*/
 
 	/**
 	 * Callback interface for a client to interact with the manager.
