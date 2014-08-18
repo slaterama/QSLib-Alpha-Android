@@ -4,72 +4,135 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.SparseArray;
 
 import com.slaterama.qslib.alpha.app.pattern.Pattern;
 
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class PatternManager {
-	public static final String TAG = PatternManager.class.getName();
+/**
+ * Interface for interacting with {@link Pattern} objects.
+ */
+@TargetApi(11)
+public class PatternManager extends RetainedInstanceManager {
 
-	public static PatternManager from(Activity activity) {
+	/**
+	 * Private key for registering an instance of {@code RetainedPatternArray} to retain
+	 * patterns across Activity re-creation (such as from a configuration change).
+	 */
+	private static final RetainedSystemInstanceKey KEY = new RetainedSystemInstanceKey();
+
+	/**
+	 * Factory method used to create a PatternManager using a {@link Activity}.
+	 *
+	 * @param activity The {@link Activity} used to create the PatternManager.
+	 * @return The newly-created PatternManager.
+	 */
+	public static PatternManager newInstance(Activity activity) {
 		if (activity == null)
 			throw new IllegalArgumentException("Activity can not be null");
-		return from(activity.getFragmentManager());
+		return new PatternManager(activity.getFragmentManager());
 	}
 
-	public static PatternManager from(Fragment fragment) {
+	/**
+	 * Factory method used to create a PatternManager using a {@link Fragment}.
+	 *
+	 * @param fragment The {@link Fragment} used to create the PatternManager.
+	 * @return The newly-created PatternManager.
+	 */
+	public static PatternManager newInstance(Fragment fragment) {
 		if (fragment == null)
 			throw new IllegalArgumentException("Fragment can not be null");
-		return from(fragment.getFragmentManager());
+		return new PatternManager(fragment.getFragmentManager());
 	}
 
-	private static PatternManager from(FragmentManager fragmentManager) {
+	/**
+	 * Factory method used to create a PatternManager using a {@link FragmentManager}.
+	 *
+	 * @param fragmentManager The {@link FragmentManager} used to create the PatternManager.
+	 * @return The newly-created PatternManager.
+	 */
+	public static PatternManager newInstance(FragmentManager fragmentManager) {
 		if (fragmentManager == null)
 			throw new IllegalArgumentException("FragmentManager can not be null");
-		PatternFragment patternFragment = (PatternFragment) fragmentManager.findFragmentByTag(TAG);
-		if (patternFragment == null) {
-			patternFragment = new PatternFragment();
-			fragmentManager.beginTransaction()
-					.add(patternFragment, TAG)
-					.commit();
-			fragmentManager.executePendingTransactions();
-		}
-		return patternFragment.getPatternManager();
+		return new PatternManager(fragmentManager);
 	}
 
-	private SparseArray<Pattern> mPatternArray;
+	/**
+	 * Constructor.
+	 *
+	 * @param fragmentManager The {@link FragmentManager} that will host the fragment used to
+	 *                        store retained {@link Pattern} instances.
+	 */
+	protected PatternManager(FragmentManager fragmentManager) {
+		super(fragmentManager);
+	}
 
+	/**
+	 * Helper method to get the retained {@link Pattern} array.
+	 *
+	 * @return The retained {@link Pattern} array.
+	 */
+	private RetainedPatternArray getRetainedPatternArray() {
+		return (RetainedPatternArray) getRetainedFragment().getRetainedSystemInstances().get(KEY);
+	}
+
+	/**
+	 * Ensures a pattern is initialized and active. If the pattern doesn't already exist,
+	 * one is created and (if the activity/fragment is currently started). Otherwise the last
+	 * created pattern is re-used.
+	 * <p>In either case, the given callback is associated with the pattern, and will be called
+	 * as the pattern state changes.</p>
+	 *
+	 * @param id       A unique identifier for this pattern. Can be whatever you want. Identifiers are scoped
+	 *                 to a particular PatternManager instance.
+	 * @param args     Optional arguments to supply to the pattern at construction. If a pattern already exists
+	 *                 (a new one does not need to be created), this parameter will be ignored and the last
+	 *                 arguments continue to be used.
+	 * @param callback Interface the PatternManager will call to report about changes in the state
+	 *                 of the pattern. Required.
+	 * @return
+	 */
 	public Pattern initPattern(int id, Bundle args, PatternCallbacks callback) {
-		if (mPatternArray == null)
-			mPatternArray = new SparseArray<Pattern>();
-		Pattern pattern = mPatternArray.get(id);
+		RetainedPatternArray patternArray = getRetainedPatternArray();
+		if (patternArray == null) {
+			patternArray = new RetainedPatternArray();
+			getRetainedFragment().getRetainedSystemInstances().put(KEY, patternArray);
+		}
+		Pattern pattern = patternArray.get(id);
 		if (pattern == null) {
 			pattern = callback.onCreatePattern(id, args);
-			mPatternArray.put(id, pattern);
+			patternArray.put(id, pattern);
 		}
 		return pattern;
 	}
 
+	/**
+	 * Return the Pattern with the given id or {@code null} if no matching Pattern is found.
+	 *
+	 * @param id A unique identifier for this pattern. Can be whatever you want. Identifiers are scoped
+	 *           to a particular PatternManager instance.
+	 * @return The pattern with the given id or {@code null} if no matching Pattern is found.
+	 */
 	public Pattern getPattern(int id) {
-		return (mPatternArray == null ? null : mPatternArray.get(id));
+		RetainedPatternArray patternArray = getRetainedPatternArray();
+		return (patternArray == null ? null : patternArray.get(id));
 	}
 
-	public static class PatternFragment extends Fragment {
-		private PatternManager mPatternManager;
+	/**
+	 * Stops and removes the pattern with the given ID.
+	 * @param id The ID of the pattern you want to remove.
+	 */
+	public void destroyPattern(int id) {
+		RetainedPatternArray patternArray = getRetainedPatternArray();
+		if (patternArray != null)
+			patternArray.remove(id);
+	}
 
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			setRetainInstance(true);
-			mPatternManager = new PatternManager();
-		}
-
-		public PatternManager getPatternManager() {
-			return mPatternManager;
-		}
+	/**
+	 * A {@link SparseArray} of retained {@link Pattern}s by pattern ID.
+	 */
+	private static class RetainedPatternArray extends SparseArray<Pattern>
+			implements RetainedSystemInstanceValue {
 	}
 
 	/**
