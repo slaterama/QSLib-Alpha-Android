@@ -73,7 +73,7 @@ public class PatternManager extends RetainedInstanceManager {
 	 * @return The retained {@link Pattern} array.
 	 */
 	private RetainedPatternArray getRetainedPatternArray() {
-		return (RetainedPatternArray) getRetainedFragment().getRetainedSystemInstances().get(KEY);
+		return (RetainedPatternArray) getRetainedFragment().getRetainedSystemInstanceMap().get(KEY);
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class PatternManager extends RetainedInstanceManager {
 		RetainedPatternArray patternArray = getRetainedPatternArray();
 		if (patternArray == null) {
 			patternArray = new RetainedPatternArray();
-			getRetainedFragment().getRetainedSystemInstances().put(KEY, patternArray);
+			getRetainedFragment().getRetainedSystemInstanceMap().put(KEY, patternArray);
 		}
 		Pattern pattern = patternArray.get(id);
 		if (pattern == null) {

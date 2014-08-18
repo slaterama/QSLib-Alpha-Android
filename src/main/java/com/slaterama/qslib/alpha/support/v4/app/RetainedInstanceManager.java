@@ -31,7 +31,7 @@ public class RetainedInstanceManager implements Map<String, Object> {
 	 * A static map used to store pending retained fragments until they have been successfully
 	 * added to the fragment manager.
 	 */
-	private static Map<FragmentManager, RetainedFragment> sPendingFragments
+	private static Map<FragmentManager, RetainedFragment> sPendingFragmentMap
 			= new WeakHashMap<FragmentManager, RetainedFragment>();
 
 	/**
@@ -86,10 +86,10 @@ public class RetainedInstanceManager implements Map<String, Object> {
 			throw new IllegalArgumentException("FragmentManager can not be null");
 		mRetainedFragment = (RetainedFragment) fragmentManager.findFragmentByTag(RETAINED_FRAGMENT_TAG);
 		if (mRetainedFragment == null)
-			mRetainedFragment = sPendingFragments.get(fragmentManager);
+			mRetainedFragment = sPendingFragmentMap.get(fragmentManager);
 		if (mRetainedFragment == null) {
 			mRetainedFragment = new RetainedFragment();
-			sPendingFragments.put(fragmentManager, mRetainedFragment);
+			sPendingFragmentMap.put(fragmentManager, mRetainedFragment);
 			fragmentManager.beginTransaction().add(mRetainedFragment, RETAINED_FRAGMENT_TAG).commit();
 		}
 	}
@@ -106,7 +106,7 @@ public class RetainedInstanceManager implements Map<String, Object> {
 	 */
 	@Override
 	public void clear() {
-		mRetainedFragment.mRetainedInstances.clear();
+		mRetainedFragment.mRetainedInstanceMap.clear();
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class RetainedInstanceManager implements Map<String, Object> {
 	 */
 	@Override
 	public boolean containsKey(Object key) {
-		return mRetainedFragment.mRetainedInstances.containsKey(key);
+		return mRetainedFragment.mRetainedInstanceMap.containsKey(key);
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class RetainedInstanceManager implements Map<String, Object> {
 	 */
 	@Override
 	public boolean containsValue(Object value) {
-		return mRetainedFragment.mRetainedInstances.containsValue(value);
+		return mRetainedFragment.mRetainedInstanceMap.containsValue(value);
 	}
 
 	/**
@@ -141,7 +141,7 @@ public class RetainedInstanceManager implements Map<String, Object> {
 	@NonNull
 	@Override
 	public Set<Entry<String, Object>> entrySet() {
-		return mRetainedFragment.mRetainedInstances.entrySet();
+		return mRetainedFragment.mRetainedInstanceMap.entrySet();
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class RetainedInstanceManager implements Map<String, Object> {
 	 */
 	@Override
 	public Object get(Object key) {
-		return mRetainedFragment.mRetainedInstances.get(key);
+		return mRetainedFragment.mRetainedInstanceMap.get(key);
 	}
 
 	/**
@@ -164,7 +164,7 @@ public class RetainedInstanceManager implements Map<String, Object> {
 	 */
 	@Override
 	public boolean isEmpty() {
-		return mRetainedFragment.mRetainedInstances.isEmpty();
+		return mRetainedFragment.mRetainedInstanceMap.isEmpty();
 	}
 
 	/**
@@ -177,7 +177,7 @@ public class RetainedInstanceManager implements Map<String, Object> {
 	@NonNull
 	@Override
 	public Set<String> keySet() {
-		return mRetainedFragment.mRetainedInstances.keySet();
+		return mRetainedFragment.mRetainedInstanceMap.keySet();
 	}
 
 	/**
@@ -189,7 +189,7 @@ public class RetainedInstanceManager implements Map<String, Object> {
 	 */
 	@Override
 	public Object put(String key, Object value) {
-		return mRetainedFragment.mRetainedInstances.put(key, value);
+		return mRetainedFragment.mRetainedInstanceMap.put(key, value);
 	}
 
 	/**
@@ -199,7 +199,7 @@ public class RetainedInstanceManager implements Map<String, Object> {
 	 */
 	@Override
 	public void putAll(Map<? extends String, ?> map) {
-		mRetainedFragment.mRetainedInstances.putAll(map);
+		mRetainedFragment.mRetainedInstanceMap.putAll(map);
 	}
 
 	/**
@@ -210,7 +210,7 @@ public class RetainedInstanceManager implements Map<String, Object> {
 	 */
 	@Override
 	public Object remove(Object key) {
-		return mRetainedFragment.mRetainedInstances.remove(key);
+		return mRetainedFragment.mRetainedInstanceMap.remove(key);
 	}
 
 	/**
@@ -220,7 +220,7 @@ public class RetainedInstanceManager implements Map<String, Object> {
 	 */
 	@Override
 	public int size() {
-		return mRetainedFragment == null ? 0 : mRetainedFragment.mRetainedInstances.size();
+		return mRetainedFragment == null ? 0 : mRetainedFragment.mRetainedInstanceMap.size();
 	}
 
 	/**
@@ -245,7 +245,7 @@ public class RetainedInstanceManager implements Map<String, Object> {
 	@NonNull
 	@Override
 	public Collection<Object> values() {
-		return mRetainedFragment.mRetainedInstances.values();
+		return mRetainedFragment.mRetainedInstanceMap.values();
 	}
 
 	/**
@@ -260,20 +260,20 @@ public class RetainedInstanceManager implements Map<String, Object> {
 		 * descendants of {@code RetainedInstanceManager}.
 		 * @see {@link PatternManager}
 		 */
-		private Map<RetainedSystemInstanceKey, RetainedSystemInstanceValue> mRetainedSystemInstances;
+		private Map<RetainedSystemInstanceKey, RetainedSystemInstanceValue> mRetainedSystemInstanceMap;
 
 		/**
 		 * A mapping of retained instances.
 		 */
-		private Map<String, Object> mRetainedInstances;
+		private Map<String, Object> mRetainedInstanceMap;
 
 		/**
 		 * Constructor.
 		 */
 		public RetainedFragment() {
 			super();
-			mRetainedSystemInstances = new WeakHashMap<RetainedSystemInstanceKey, RetainedSystemInstanceValue>();
-			mRetainedInstances = new HashMap<String, Object>();
+			mRetainedSystemInstanceMap = new WeakHashMap<RetainedSystemInstanceKey, RetainedSystemInstanceValue>();
+			mRetainedInstanceMap = new HashMap<String, Object>();
 		}
 
 		/**
@@ -284,7 +284,7 @@ public class RetainedInstanceManager implements Map<String, Object> {
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			sPendingFragments.remove(getFragmentManager());
+			sPendingFragmentMap.remove(getFragmentManager());
 		}
 
 		/**
@@ -302,8 +302,8 @@ public class RetainedInstanceManager implements Map<String, Object> {
 		 * to register their {@code RetainedSystemInstanceValue}s.
 		 * @return The mapping of retained system instances.
 		 */
-		protected Map<RetainedSystemInstanceKey, RetainedSystemInstanceValue> getRetainedSystemInstances() {
-			return mRetainedSystemInstances;
+		protected Map<RetainedSystemInstanceKey, RetainedSystemInstanceValue> getRetainedSystemInstanceMap() {
+			return mRetainedSystemInstanceMap;
 		}
 	}
 
