@@ -16,10 +16,12 @@ public abstract class Mvp extends Pattern {
 	public void registerPresenter(Presenter presenter) {
 		mPresenterMap.put(presenter, this);
 		presenter.setModel(mModel);
+		mModel.addObserver(presenter);
 	}
 
 	public void unregisterPresenter(Presenter presenter) {
 		presenter.setModel(null);
 		mPresenterMap.remove(presenter);
+		mModel.deleteObserver(presenter);
 	}
 }
