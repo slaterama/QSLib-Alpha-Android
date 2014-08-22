@@ -1,56 +1,22 @@
 package com.slaterama.qslib.alpha.app.pattern;
 
+import com.slaterama.qslib.alpha.app.pattern.event.UpdateEvent;
+
 import java.util.Observable;
+import java.util.Observer;
 
-public abstract class Model extends Observable {
+public abstract class Model extends Observable
+		implements Observer {
 
-	public static class ModelEvent {
-		private String mAction;
-		private Object mWhat;
-		private String mProperty;
-		private Object mValue;
+	@Override
+	public void update(Observable observable, Object data) {
+		// Assuming for now that the only notification we get here is
+		// an UpdateEvent from one of the VOs. Just pass it along to any
+		// observers.
 
-		public ModelEvent(String action, Object what, String property, Object value) {
-			mAction = action;
-			mWhat = what;
-			mProperty = property;
-			mValue = value;
-		}
-
-		public ModelEvent(String action, Object value) {
-			this(action, null, null, value);
-		}
-
-		public String getAction() {
-			return mAction;
-		}
-
-		public void setAction(String action) {
-			mAction = action;
-		}
-
-		public Object getWhat() {
-			return mWhat;
-		}
-
-		public void setWhat(Object what) {
-			mWhat = what;
-		}
-
-		public String getProperty() {
-			return mProperty;
-		}
-
-		public void setProperty(String property) {
-			mProperty = property;
-		}
-
-		public Object getValue() {
-			return mValue;
-		}
-
-		public void setValue(Object value) {
-			mValue = value;
+		if (data instanceof UpdateEvent) {
+			setChanged();
+			notifyObservers(data);
 		}
 	}
 }
