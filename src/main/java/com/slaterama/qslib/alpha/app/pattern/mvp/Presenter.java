@@ -4,21 +4,17 @@ import com.slaterama.qslib.alpha.app.pattern.Model;
 
 import java.util.Observer;
 
-public abstract class Presenter implements Observer {
+public abstract class Presenter<M extends Model, V> implements Observer {
 
-	protected IView mView;
-	protected Model mModel;
+	protected V mView;
+	protected M mModel;
 
-	public Presenter(IView view) {
+	public Presenter(V view) {
 		super();
 		mView = view;
 	}
 
-	protected void setModel(Model model) {
+	protected void setModel(M model) {
 		mModel = model;
-	}
-
-	public static abstract interface IView {
-
 	}
 }

@@ -4,19 +4,19 @@ import java.util.EventObject;
 
 public class UpdateEvent extends EventObject {
 
-	private String mProperty;
+	private String mPropertyName;
 	private Object mOldValue;
 	private Object mNewValue;
 
-	public UpdateEvent(Object source, String property, Object oldValue, Object newValue) {
+	public UpdateEvent(Object source, String propertyName, Object oldValue, Object newValue) {
 		super(source);
-		mProperty = property;
+		mPropertyName = propertyName;
 		mOldValue = oldValue;
 		mNewValue = newValue;
 	}
 
-	public String getProperty() {
-		return mProperty;
+	public String getPropertyName() {
+		return mPropertyName;
 	}
 
 	public Object getOldValue() {

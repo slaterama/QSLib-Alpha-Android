@@ -1,8 +1,8 @@
 package com.slaterama.qslib.alpha.app.pattern;
 
-public abstract class Pattern {
+public abstract class Pattern<M extends Model> {
 
-	protected Model mModel;
+	protected M mModel;
 
 	public Pattern() {
 		mModel = onCreateModel();
@@ -10,5 +10,5 @@ public abstract class Pattern {
 			throw new IllegalStateException("onCreateModel must return a valid Model");
 	}
 
-	protected abstract Model onCreateModel();
+	protected abstract M onCreateModel();
 }

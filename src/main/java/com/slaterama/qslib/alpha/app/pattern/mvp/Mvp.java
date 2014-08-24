@@ -1,27 +1,17 @@
 package com.slaterama.qslib.alpha.app.pattern.mvp;
 
+import com.slaterama.qslib.alpha.app.pattern.Model;
 import com.slaterama.qslib.alpha.app.pattern.Pattern;
 
-import java.util.Map;
-import java.util.WeakHashMap;
+public abstract class Mvp<M extends Model> extends Pattern<M> {
 
-public abstract class Mvp extends Pattern {
-
-//	protected Map<Presenter, Mvp> mPresenterMap;
-
-	public Mvp() {
-//		mPresenterMap = new WeakHashMap<Presenter, Mvp>();
-	}
-
-	public void registerPresenter(Presenter presenter) {
-//		mPresenterMap.put(presenter, this);
+	public void registerPresenter(Presenter<M, ?> presenter) {
 		presenter.setModel(mModel);
 		mModel.addObserver(presenter);
 	}
 
-	public void unregisterPresenter(Presenter presenter) {
+	public void unregisterPresenter(Presenter<M, ?> presenter) {
 		presenter.setModel(null);
-//		mPresenterMap.remove(presenter);
 		mModel.deleteObserver(presenter);
 	}
 }
