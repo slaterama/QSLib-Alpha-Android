@@ -1,19 +1,14 @@
 package com.slaterama.qslib.alpha.app.pattern;
 
-import com.slaterama.qslib.alpha.app.pattern.event.CreateEvent;
-import com.slaterama.qslib.alpha.app.pattern.event.DeleteEvent;
-import com.slaterama.qslib.alpha.app.pattern.event.RetrieveEvent;
-import com.slaterama.qslib.alpha.app.pattern.event.UpdateEvent;
 import com.slaterama.qslib.alpha.util.Publisher;
 import com.slaterama.qslib.alpha.util.SimplePublisher;
 import com.slaterama.qslib.alpha.util.Subscriber;
 
-public abstract class Model
-		implements Publisher, Subscriber {
+public abstract class EntityObject implements Publisher {
 
 	private SimplePublisher mPublisher;
 
-	public Model() {
+	public EntityObject() {
 		super();
 		mPublisher = new SimplePublisher(this);
 	}
@@ -46,19 +41,5 @@ public abstract class Model
 	@Override
 	public void notifySubscribers(Object data) {
 		mPublisher.notifySubscribers(data);
-	}
-
-	@Override
-	public void update(Object publisher, Object data) {
-		// Assuming for now that the only notification we get here is
-		// an UpdateEvent from one of the EntityObjects. Just pass it along to any
-		// observers.
-
-		if (data instanceof CreateEvent
-				|| data instanceof DeleteEvent
-				|| data instanceof RetrieveEvent
-				|| data instanceof UpdateEvent) {
-			notifySubscribers(data);
-		}
 	}
 }

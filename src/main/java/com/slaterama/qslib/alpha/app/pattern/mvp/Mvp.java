@@ -15,14 +15,14 @@ public abstract class Mvp<M extends Model> extends Pattern<M> {
 			mRegisteredPresenters = new HashSet<>();
 		mRegisteredPresenters.add(presenter);
 		presenter.setModel(mModel);
-		mModel.addObserver(presenter);
+		mModel.addSubscriber(presenter);
 	}
 
 	public void unregisterPresenter(Presenter<M, ?> presenter) {
 		if (mRegisteredPresenters != null)
 			mRegisteredPresenters.remove(presenter);
 		presenter.setModel(null);
-		mModel.deleteObserver(presenter);
+		mModel.deleteSubscriber(presenter);
 	}
 
 	public boolean isPresenterRegistered(Presenter<M, ?> presenter) {
