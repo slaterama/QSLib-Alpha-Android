@@ -10,7 +10,7 @@ public abstract class Mvp<M extends Model> extends Pattern<M> {
 
 	public Set<Presenter<M, ?>> mRegisteredPresenters;
 
-	public void registerPresenter(Presenter<M, ?> presenter) {
+	public synchronized void registerPresenter(Presenter<M, ?> presenter) {
 		if (mRegisteredPresenters == null)
 			mRegisteredPresenters = new HashSet<>();
 		mRegisteredPresenters.add(presenter);
@@ -18,7 +18,7 @@ public abstract class Mvp<M extends Model> extends Pattern<M> {
 		mModel.addSubscriber(presenter);
 	}
 
-	public void unregisterPresenter(Presenter<M, ?> presenter) {
+	public synchronized void unregisterPresenter(Presenter<M, ?> presenter) {
 		if (mRegisteredPresenters != null)
 			mRegisteredPresenters.remove(presenter);
 		presenter.setModel(null);
