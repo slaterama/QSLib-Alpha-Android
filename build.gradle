@@ -1,20 +1,19 @@
 apply plugin: 'com.android.library'
 
 android {
-	compileSdkVersion "android-20"
-	buildToolsVersion "19.1.0"
+	compileSdkVersion 'android-23'
+	buildToolsVersion "23.0.0"
 
 	defaultConfig {
-		applicationId "com.slaterama.qslib.alpha"
 		minSdkVersion 8
-		targetSdkVersion 19
+		targetSdkVersion 23
 		versionCode 1
 		versionName "1.0"
 	}
 
 	buildTypes {
 		release {
-			runProguard false
+			minifyEnabled false
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 		}
 	}
@@ -27,6 +26,6 @@ android {
 
 dependencies {
 	compile fileTree(dir: 'libs', include: ['*.jar'])
-	compile 'com.android.support:appcompat-v7:20.0.0'
+	compile 'com.android.support:appcompat-v7:23.0.0'
 	compile project(':qslib')
 }
